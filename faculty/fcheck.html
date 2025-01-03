@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in/out</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <section class="w-full min-h-[100vh] h-full bg-blue-100 pb-6">
+        <section class="w-[90%] mx-auto">
+            <h1 class="font-bold text-[35px] pt-8  text-blue-950 ">CHECK IN-CHECK OUT </h1>
+            <div class="w-full h-[500px] bg-green-50 rounded-2xl mt-6 px-5">
+                <h3 class="pt-3 font-semibold text-[25px] mb-4  text-blue-950 ">Details:</h3>
+                <br>
+                <table class="table-auto w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border  bg-blue-200  border-gray-300 px-4 py-2 text-left">S.No</th>
+                            <th class="border  bg-blue-200  border-gray-300 px-4 py-2 text-left">Name</th>
+                            <th class="border  bg-blue-200  border-gray-300 px-4 py-2 text-left">Check In</th>
+                            <th class="border  bg-blue-200  border-gray-300 px-4 py-2 text-left">Check Out</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white hover:bg-gray-100">
+                            <td class="border border-gray-300 px-4 py-2">1</td>
+                            <td class="border border-gray-300 px-4 py-2">John Doe</td>
+                            <td class="border border-gray-300 px-4 py-2"><button class="checkin bg-blue-500 hover:bg-blue-700 text-white font-bold px-5 py-1 mt-2 rounded-xl mr-3">check in</button></td>
+                            <td class="border border-gray-300 px-4 py-2"><button class="checkout bg-blue-500 hover:bg-blue-700 text-white font-bold px-5 py-1 mt-2 rounded-xl mr-3">check out</button></td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-gray-100">
+                            <td class="border border-gray-300 px-4 py-2">2</td>
+                            <td class="border border-gray-300 px-4 py-2">Jane Smith</td>
+                            <td class="border border-gray-300 px-4 py-2"><button class="checkin bg-blue-500 hover:bg-blue-700 text-white font-bold px-5 py-1 mt-2 rounded-xl mr-3">check in</button></td>
+                            <td class="border border-gray-300 px-4 py-2"><button class="checkout bg-blue-500 hover:bg-blue-700 text-white font-bold px-5 py-1 mt-2 rounded-xl mr-3">check out</button></td>
+                        </tr>
+                        <tr class="bg-white hover:bg-gray-100">
+                            <td class="border border-gray-300 px-4 py-2">3</td>
+                            <td class="border border-gray-300 px-4 py-2">Alice Johnson</td>
+                            <td class="border border-gray-300 px-4 py-2"><button class="checkin bg-blue-500 hover:bg-blue-700 text-white font-bold px-5 py-1 mt-2 rounded-xl mr-3">check in</button></td>
+                            <td class="border border-gray-300 px-4 py-2"><button class="checkout bg-blue-500 hover:bg-blue-700 text-white font-bold px-5 py-1 mt-2 rounded-xl mr-3">check out</button></td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-gray-100">
+                            <td class="border border-gray-300 px-4 py-2">4</td>
+                            <td class="border border-gray-300 px-4 py-2">Bob Brown</td>
+                            <td class="border border-gray-300 px-4 py-2"><button class="checkin bg-blue-500 hover:bg-blue-700 text-white font-bold px-5 py-1 mt-2 rounded-xl mr-3">check in</button></td>
+                            <td class="border border-gray-300 px-4 py-2"><button class="checkout bg-blue-500 hover:bg-blue-700 text-white font-bold px-5 py-1 mt-2 rounded-xl mr-3">check out</button></td>
+                        </tr>
+                    </tbody>
+                </table>               
+                
+            </div>
+                          
+        </section>
+    </section>
+
+   
+    <script>
+        document.querySelectorAll('.checkin, .checkout').forEach(button => {
+            button.addEventListener('click', function() {
+                const cell = this.parentElement;
+                const currentDate = new Date().toLocaleString();
+                
+                // Create a text span for the date and time
+                const dateTimeSpan = document.createElement('span');
+                dateTimeSpan.textContent = currentDate;
+                dateTimeSpan.classList.add('text-gray-800', 'mr-4');
+                
+                // Create a cancel button
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancel';
+                cancelButton.classList.add('bg-red-500', 'hover:bg-red-700', 'text-white', 'font-bold', 'px-3', 'py-1', 'rounded-xl');
+                
+                // Hide the clicked button
+                this.style.display = 'none';
+                
+                // Append the date/time and cancel button to the cell
+                cell.appendChild(dateTimeSpan);
+                cell.appendChild(cancelButton);
+
+                // Cancel button functionality
+                cancelButton.addEventListener('click', () => {
+                    cell.removeChild(dateTimeSpan);
+                    cell.removeChild(cancelButton);
+                    this.style.display = 'block';
+                });
+            });
+        });
+    </script>
+
+    
+</body>
+</html>
