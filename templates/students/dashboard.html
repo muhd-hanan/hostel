@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Student Dashboard</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a href="{% url 'students:food_preference_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Food Preferences</a>
+            <a href="{% url 'students:wash_slot_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Wash Slots</a>
+            <a href="{% url 'students:fee_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">View Fees</a>
+            <a href="{% url 'students:complaint_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Complaints</a>
+            <a href="{% url 'students:attendance_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">View Attendance</a>
+            <a href="{% url 'students:check_in_out_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Check In/Out</a>
+            <a href="{% url 'students:notification_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Notifications</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Complaints{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Complaints</h1>
+            <a href="{% url 'students:complaint_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Complaint</a>
+        </div>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">Description</th>
+                    <th class="p-2 text-left">Status</th>
+                    <th class="p-2 text-left">Resolved By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ complaint.description }}</td>
+                        <td class="p-2">{{ complaint.status }}</td>
+                        <td class="p-2">{{ complaint.resolved_by.email|default:"Not resolved" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="p-2 text-center">No complaints available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

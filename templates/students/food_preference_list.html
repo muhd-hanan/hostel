@@ -1,0 +1,35 @@
+<!-- students/templates/students/food_preference_list.html -->
+{% extends "base.html" %}
+{% block title %}Food Preferences{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Food Preferences</h1>
+            <a href="{% url 'students:food_preference_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Preference</a>
+        </div>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">Date</th>
+                    <th class="p-2 text-left">Breakfast</th>
+                    <th class="p-2 text-left">Lunch</th>
+                    <th class="p-2 text-left">Snack</th>
+                    <th class="p-2 text-left">Dinner</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for preference in preferences %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ preference.date }}</td>
+                        <td class="p-2">{{ preference.breakfast|yesno:"Yes,No" }}</td>
+                        <td class="p-2">{{ preference.lunch|yesno:"Yes,No" }}</td>
+                        <td class="p-2">{{ preference.snack|yesno:"Yes,No" }}</td>
+                        <td class="p-2">{{ preference.dinner|yesno:"Yes,No" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="p-2 text-center">No preferences set.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

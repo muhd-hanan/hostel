@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block title %}Book Wash Slot{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+        <h1 class="text-2xl font-bold mb-4">Book Wash Slot</h1>
+        <p class="mb-4">Slot: {{ slot.date }} {{ slot.start_time }} - {{ slot.end_time }}</p>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {{ form.as_hidden }}
+            <div class="flex space-x-4">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Book</button>
+                <a href="{% url 'students:wash_slot_list' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

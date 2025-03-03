@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Parent Dashboard{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Parent Dashboard</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a href="{% url 'parents:attendance_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">View Attendance</a>
+            <a href="{% url 'parents:check_in_out_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">View Check In/Out</a>
+            <a href="{% url 'parents:fee_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">View Fees</a>
+            <a href="{% url 'parents:notification_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">View Notifications</a>
+        </div>
+    </div>
+{% endblock %}

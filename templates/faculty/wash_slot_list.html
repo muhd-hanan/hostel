@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Wash Slot List{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Wash Slots</h1>
+            <a href="{% url 'faculty:wash_slot_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Add New Slot
+            </a>
+        </div>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">Date</th>
+                    <th class="p-2 text-left">Time</th>
+                    <th class="p-2 text-left">Max Capacity</th>
+                    <th class="p-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot in wash_slots %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ slot.date }}</td>
+                        <td class="p-2">{{ slot.start_time }} - {{ slot.end_time }}</td>
+                        <td class="p-2">{{ slot.max_capacity }}</td>
+                        <td class="p-2">
+                            <a href="{% url 'faculty:wash_slot_update' slot.pk %}" class="text-blue-500 hover:underline">Edit</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="p-2 text-center">No wash slots available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
