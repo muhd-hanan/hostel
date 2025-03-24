@@ -9,8 +9,9 @@ from django.contrib.auth import authenticate, login, logout
 from users.models import User
 from .forms import (
     FoodMenuForm, WashSlotForm, FeeForm, ComplaintForm, AttendanceForm,
-    CheckInOutForm, NotificationForm, ParentStudentForm, StudentCreateForm, ParentCreateForm
+    CheckInOutForm, NotificationForm, ParentStudentForm, StudentCreateForm, ParentCreateForm, FeeAddForm
 )
+from datetime import date
 
 # Decorator to check if user is faculty
 def faculty_required(view_func):
@@ -100,6 +101,22 @@ def fee_list(request):
     fees = Fee.objects.all()
     return render(request, 'faculty/fee_list.html', {'fees': fees})
 
+
+@faculty_required
+def fee_add(request):
+    if request.method == 'POST':
+        form = FeeAddForm(request.POST)
+        if form.is_valid():
+            fee = form.save(commit=False)
+            fee.updated_by = request.user
+            fee.save()
+            messages.success(request, "Fee status updated successfully.")
+            return redirect('faculty:fee_list')
+    else:
+        form = FeeAddForm()
+    return render(request, 'faculty/fee_form.html', {'form': form})
+
+
 @faculty_required
 def fee_update(request, pk):
     fee = get_object_or_404(Fee, pk=pk)
@@ -141,26 +158,49 @@ def complaint_update(request, pk):
 # Attendance Views
 @faculty_required
 def attendance_list(request):
+    selected_date = request.GET.get('date')
     attendance_records = Attendance.objects.all()
-    return render(request, 'faculty/attendance_list.html', {'attendance_records': attendance_records})
+    
+    if selected_date:
+        attendance_records = attendance_records.filter(date=selected_date)
+        
+    return render(request, 'faculty/attendance_list.html', {
+        'attendance_records': attendance_records,
+        'selected_date': selected_date
+    })
 
 @faculty_required
 def attendance_mark(request):
+    students = User.objects.filter(is_student=True)
+    
     if request.method == 'POST':
         form = AttendanceForm(request.POST)
         if form.is_valid():
-            student = form.cleaned_data['student']
-            date = form.cleaned_data['date']
-            is_present = form.cleaned_data['is_present']
-            Attendance.objects.update_or_create(
-                student=student, date=date,
-                defaults={'is_present': is_present, 'updated_by': request.user}
-            )
-            messages.success(request, "Attendance marked successfully.")
-            return redirect('faculty:attendance_list')
+            selected_date = form.cleaned_data['date']
+            # Process attendance for all students
+            for student in students:
+                is_present = request.POST.get(f'present_{student.id}') == 'on'
+                Attendance.objects.update_or_create(
+                    student=student,
+                    date=selected_date,
+                    defaults={'is_present': is_present}
+                )
+            messages.success(request, "Attendance marked successfully for all students.")
+            return redirect('faculty:attendance_list')  # Redirect back to same page
     else:
-        form = AttendanceForm()
-    return render(request, 'faculty/attendance_form.html', {'form': form})
+        form = AttendanceForm(initial={'date': date.today()})
+    
+    # Fetch existing attendance records for the selected date to pre-check boxes
+    selected_date = form.initial['date'] if not request.POST else request.POST.get('date')
+    attendance_records = Attendance.objects.filter(date=selected_date).select_related('student')
+    attendance_dict = {record.student.id: record.is_present for record in attendance_records}
+    
+    return render(request, 'faculty/attendance_form.html', {
+        'form': form,
+        'students': students,
+        'attendance_dict': attendance_dict,
+        'selected_date': selected_date
+    })
 
 # Check In/Out Views
 @faculty_required

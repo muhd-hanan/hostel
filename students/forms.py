@@ -27,11 +27,19 @@ class ComplaintForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'rows': 4}),
         }
 
-class CheckInOutForm(forms.ModelForm):
+class CheckInForm(forms.ModelForm):
     class Meta:
         model = CheckInOut
-        fields = ['check_in', 'check_out']
+        fields = ['check_in']
         widgets = {
             'check_in': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+
+class CheckOutForm(forms.ModelForm):
+    class Meta:
+        model = CheckInOut
+        fields = ['check_out']
+        widgets = {
             'check_out': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }

@@ -16,6 +16,7 @@ urlpatterns = [
     path('wash-slots/<int:pk>/update/', views.wash_slot_update, name='wash_slot_update'),
     
     path('fees/', views.fee_list, name='fee_list'),
+    path('fees/add/', views.fee_add, name='fee_add'),
     path('fees/<int:pk>/update/', views.fee_update, name='fee_update'),
     
     path('complaints/', views.complaint_list, name='complaint_list'),

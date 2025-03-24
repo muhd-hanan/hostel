@@ -14,6 +14,7 @@ urlpatterns = [
     path('complaints/add/', views.complaint_add, name='complaint_add'),
     path('attendance/', views.attendance_list, name='attendance_list'),
     path('check-in-out/', views.check_in_out_list, name='check_in_out_list'),
-    path('check-in-out/add/', views.check_in_out_add, name='check_in_out_add'),
+    path('check-in/add/', views.check_in_add, name='check_in_add'),
+    path('check-out/add/', views.check_out_add, name='check_out_add'),
     path('notifications/', views.notification_list, name='notification_list'),
 ]

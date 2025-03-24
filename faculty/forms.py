@@ -23,6 +23,15 @@ class WashSlotForm(forms.ModelForm):
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }
 
+
+class FeeAddForm(forms.ModelForm):
+    class Meta:
+        model = Fee
+        fields = ['student','amount', 'due_date', 'status']
+        widgets = {
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
 class FeeForm(forms.ModelForm):
     class Meta:
         model = Fee
@@ -37,9 +46,10 @@ class ComplaintForm(forms.ModelForm):
         fields = ['status']
 
 class AttendanceForm(forms.Form):
-    student = forms.ModelChoiceField(queryset=User.objects.filter(is_student=True))
-    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    is_present = forms.BooleanField(required=False)
+    date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        label="Select Date"
+    )
 
 class CheckInOutForm(forms.ModelForm):
     class Meta:
@@ -51,7 +61,6 @@ class CheckInOutForm(forms.ModelForm):
         }
 
 class NotificationForm(forms.ModelForm):
-    recipient = forms.ModelChoiceField(queryset=User.objects.all())
     
     class Meta:
         model = Notification

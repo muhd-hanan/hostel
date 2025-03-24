@@ -19,7 +19,7 @@
             <tbody>
                 {% for notification in notifications %}
                     <tr class="border-b">
-                        <td class="p-2">{{ notification.recipient.email }}</td>
+                        <td class="p-2">{{ notification.recipient }}</td>
                         <td class="p-2">{{ notification.message }}</td>
                         <td class="p-2">{{ notification.created_datetime }}</td>
                     </tr>

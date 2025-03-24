@@ -36,5 +36,5 @@ def fee_list(request):
 
 @parent_required
 def notification_list(request):
-    notifications = Notification.objects.filter(recipient=request.user)
+    notifications = Notification.objects.filter(recipient="Parents")
     return render(request, 'parents/notification_list.html', {'notifications': notifications})

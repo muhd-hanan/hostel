@@ -8,6 +8,11 @@ from common.models import CommonModel
 from users.models import User
 from faculty.models import FoodMenu, WashSlot
 
+NOTIFICATION_CHOICES = (
+    ('Students', 'Students'),
+    ('Parents', 'Parents'),
+)
+
 class FoodPreference(CommonModel):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='food_preferences')
     date = models.DateField()
@@ -38,10 +43,10 @@ class WashBooking(CommonModel):
         unique_together = ('student', 'slot')
 
 class Fee(CommonModel):
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='fees')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='fees', limit_choices_to={'is_student':True})
+    amount = models.FloatField()
     due_date = models.DateField()
-    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    paid_amount = models.FloatField(default=0)
     paid_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, 
                             choices=(('pending', 'Pending'), 
@@ -100,7 +105,7 @@ class CheckInOut(CommonModel):
 
 
 class Notification(CommonModel):
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    recipient = models.CharField(max_length=25, choices=NOTIFICATION_CHOICES, default="Parent")
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, 
