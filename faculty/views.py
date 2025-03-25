@@ -11,6 +11,7 @@ from .forms import (
     FoodMenuForm, WashSlotForm, FeeForm, ComplaintForm, AttendanceForm,
     CheckInOutForm, NotificationForm, ParentStudentForm, StudentCreateForm, ParentCreateForm, FeeAddForm
 )
+from django.db.models import Count
 from datetime import date
 
 # Decorator to check if user is faculty
@@ -62,7 +63,8 @@ def food_menu_update(request, pk):
 # Wash Slot Views
 @faculty_required
 def wash_slot_list(request):
-    wash_slots = WashSlot.objects.all()
+    wash_slots = WashSlot.objects.annotate(student_count=Count('students')).all()
+    # You can pass the data as-is and calculate in the template, or precompute here
     return render(request, 'faculty/wash_slot_list.html', {'wash_slots': wash_slots})
 
 @faculty_required

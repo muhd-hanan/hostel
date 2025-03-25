@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import FoodPreference, WashBooking, Fee, Complaint, Attendance, CheckInOut, Notification
 from faculty.models import WashSlot
 from .forms import FoodPreferenceForm, WashBookingForm, ComplaintForm, CheckInForm, CheckOutForm
+from django.db.models import Count
 
 def student_required(view_func):
     decorated_view_func = login_required(user_passes_test(lambda u: u.is_student)(view_func))
@@ -37,28 +38,35 @@ def food_preference_add(request):
 
 @student_required
 def wash_slot_list(request):
-    all_slots = WashSlot.objects.all()
-    bookings = WashBooking.objects.filter(student=request.user)
-    booked_slot_ids = bookings.values_list('slot_id', flat=True)
-    available_slots = all_slots.exclude(id__in=booked_slot_ids)
-    return render(request, 'students/wash_slot_list.html', {'available_slots': available_slots, 'bookings': bookings})
+    student=request.user
+    wash_slots = WashSlot.objects.annotate(student_count=Count('students')).all()
+    return render(request, 'students/wash_slot_list.html', {'wash_slots': wash_slots, 'student':student})
 
 @student_required
 def wash_slot_book(request, slot_id):
+    student = request.user
     slot = get_object_or_404(WashSlot, id=slot_id)
-    if request.method == 'POST':
-        form = WashBookingForm(request.POST)
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.student = request.user
-            booking.created_by = request.user
-            booking.updated_by = request.user
-            booking.save()
-            messages.success(request, "Wash slot booked successfully.")
-            return redirect('students:wash_slot_list')
+    if slot.students.count() >= slot.max_capacity:
+        messages.error(request, "This wash slot is already full.")
+    elif student in slot.students.all():
+        messages.info(request, "You have already booked this slot.")
     else:
-        form = WashBookingForm(initial={'slot': slot})
-    return render(request, 'students/wash_slot_book.html', {'form': form, 'slot': slot})
+        slot.students.add(student)
+        slot.save()
+        messages.success(request, "Wash slot booked successfully.")
+    return redirect('students:wash_slot_list')
+
+@student_required
+def wash_slot_complete(request, slot_id):
+    student = request.user
+    slot = get_object_or_404(WashSlot, id=slot_id)
+    if student in slot.students.all():
+        slot.students.remove(student)
+        slot.save()
+        messages.success(request, "Washing completed successfully.")
+    else:
+        messages.error(request, "You are not booked for this slot.")
+    return redirect('students:wash_slot_list')
 
 @student_required
 def fee_list(request):

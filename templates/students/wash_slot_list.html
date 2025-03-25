@@ -1,56 +1,38 @@
-<!-- students/templates/students/wash_slot_list.html -->
 {% extends "base.html" %}
-{% block title %}Wash Slots{% endblock %}
+{% load wash_slot_tags %}
+{% block title %}Wash Slot List{% endblock %}
 {% block content %}
     <div class="bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-4">Wash Slots</h1>
-        
-        <!-- Booked Slots -->
-        <h2 class="text-xl font-semibold mb-2">Your Booked Slots</h2>
-        <table class="w-full border-collapse mb-6">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="p-2 text-left">Date</th>
-                    <th class="p-2 text-left">Time</th>
-                    <th class="p-2 text-left">Max Capacity</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for booking in bookings %}
-                    <tr class="border-b">
-                        <td class="p-2">{{ booking.slot.date }}</td>
-                        <td class="p-2">{{ booking.slot.start_time }} - {{ booking.slot.end_time }}</td>
-                        <td class="p-2">{{ booking.slot.max_capacity }}</td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="3" class="p-2 text-center">No slots booked yet.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        <!-- Available Slots -->
-        <h2 class="text-xl font-semibold mb-2">Available Slots</h2>
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Wash Slots</h1>
+        </div>
         <table class="w-full border-collapse">
             <thead>
                 <tr class="bg-gray-200">
-                    <th class="p-2 text-left">Date</th>
-                    <th class="p-2 text-left">Time</th>
-                    <th class="p-2 text-left">Max Capacity</th>
-                    <th class="p-2 text-left">Action</th>
+                    <th class="p-2 text-center">Time</th>
+                    <th class="p-2 text-center">Max Capacity</th>
+                    <th class="p-2 text-center">Current Students</th>
+                    <th class="p-2 text-center">Available Capacity</th>
+                    <th class="p-2 text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for slot in available_slots %}
+                {% for slot in wash_slots %}
                     <tr class="border-b">
-                        <td class="p-2">{{ slot.date }}</td>
-                        <td class="p-2">{{ slot.start_time }} - {{ slot.end_time }}</td>
-                        <td class="p-2">{{ slot.max_capacity }}</td>
-                        <td class="p-2">
-                            <a href="{% url 'students:wash_slot_book' slot.id %}" class="text-blue-500 hover:underline">Book</a>
+                        <td class="p-2 text-center">{{ slot.start_time }} - {{ slot.end_time }}</td>
+                        <td class="p-2 text-center">{{ slot.max_capacity }}</td>
+                        <td class="p-2 text-center">{{ slot.students.count }}</td>
+                        <td class="p-2 text-center">{{ slot.max_capacity|sub:slot.students.count }}</td>
+                        <td class="p-2 text-center">
+                            {% if request.user in slot.students.all %}
+                                <a href="{% url 'students:wash_slot_complete' slot.id %}" class="text-blue-500 hover:underline">Complete</a>
+                            {% else %}
+                                <a href="{% url 'students:wash_slot_book' slot.id %}" class="text-blue-500 hover:underline">Book</a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="4" class="p-2 text-center">No wash slots available.</td></tr>
+                    <tr><td colspan="5" class="p-2 text-center">No wash slots available.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

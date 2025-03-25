@@ -16,9 +16,8 @@ class FoodMenuForm(forms.ModelForm):
 class WashSlotForm(forms.ModelForm):
     class Meta:
         model = WashSlot
-        fields = ['date', 'start_time', 'end_time', 'max_capacity']
+        fields = ['start_time', 'end_time', 'max_capacity']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }

@@ -25,16 +25,16 @@ class FoodMenu(CommonModel):
         return f"{self.date} - {self.meal_type}"
 
 class WashSlot(CommonModel):
-    date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     max_capacity = models.PositiveIntegerField(default=10)
+    students = models.ManyToManyField(User, limit_choices_to={'is_student':True}, related_name="whash_slot")
 
     class Meta:
         db_table = 'faculty_washslot'
         verbose_name = 'wash slot'
         verbose_name_plural = 'wash slots'
-        ordering = ["-date", "start_time"]
+        ordering = ["start_time"]
 
     def __str__(self):
-        return f"{self.date} {self.start_time}-{self.end_time}"
+        return f'{self.start_time}-{self.end_time}'
