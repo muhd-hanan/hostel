@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Food Menu List{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Today Food Count</h1>
+        </div>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-center">BreakFast</th>
+                    <th class="p-2 text-center">Lunch</th>
+                    <th class="p-2 text-center">Snacks</th>
+                    <th class="p-2 text-center">Dinner</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr class="border-b">
+                        <td class="p-2 text-center">{{ breakfast }}</td>
+                        <td class="p-2 text-center">{{ lunch }}</td>
+                        <td class="p-2 text-center">{{ snack }}</td>
+                        <td class="p-2 text-center">{{ dinner }}</td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

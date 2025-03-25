@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Parent List{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Parents</h1>
+            <a href="{% url 'manager:parent_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Parent</a>
+        </div>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">Name</th>
+                    <th class="p-2 text-left">Phone Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for parent in parents %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ parent.first_name }} {{ parent.last_name }}</td>
+                        <td class="p-2">{{ parent.phone_number|default:"Not set" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="2" class="p-2 text-center">No parents available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

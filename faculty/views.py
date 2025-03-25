@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import FoodMenu, WashSlot
-from students.models import Fee, Complaint, Attendance, CheckInOut, Notification
+from students.models import Fee, Complaint, Attendance, CheckInOut, Notification, FoodPreference
 from parents.models import ParentStudent
 from django.contrib.auth import authenticate, login, logout
 from users.models import User
@@ -13,6 +13,8 @@ from .forms import (
 )
 from django.db.models import Count
 from datetime import date
+
+from django.utils import timezone
 
 # Decorator to check if user is faculty
 def faculty_required(view_func):
@@ -29,6 +31,33 @@ def faculty_dashboard(request):
 def food_menu_list(request):
     food_menus = FoodMenu.objects.all()
     return render(request, 'faculty/food_menu_list.html', {'food_menus': food_menus})
+
+
+@faculty_required
+def food_count_list(request):
+    today = timezone.now().date()
+
+    breakfast = FoodPreference.objects.filter(
+        date=today, breakfast=True
+    ).count()
+    lunch = FoodPreference.objects.filter(
+        date=today, lunch=True
+    ).count()
+    snack = FoodPreference.objects.filter(
+        date=today, snack=True
+    ).count()
+    dinner = FoodPreference.objects.filter(
+        date=today, dinner=True
+    ).count()
+
+    return render(request, 'faculty/food_count.html', {
+        'breakfast': breakfast,
+        'lunch': lunch,
+        'snack': snack,
+        'dinner': dinner,
+    })
+
+
 
 @faculty_required
 def food_menu_add(request):
@@ -60,11 +89,9 @@ def food_menu_update(request, pk):
         form = FoodMenuForm(instance=menu)
     return render(request, 'faculty/food_menu_form.html', {'form': form})
 
-# Wash Slot Views
 @faculty_required
 def wash_slot_list(request):
     wash_slots = WashSlot.objects.annotate(student_count=Count('students')).all()
-    # You can pass the data as-is and calculate in the template, or precompute here
     return render(request, 'faculty/wash_slot_list.html', {'wash_slots': wash_slots})
 
 @faculty_required
@@ -97,7 +124,6 @@ def wash_slot_update(request, pk):
         form = WashSlotForm(instance=slot)
     return render(request, 'faculty/wash_slot_form.html', {'form': form})
 
-# Fee Views
 @faculty_required
 def fee_list(request):
     fees = Fee.objects.all()
@@ -134,7 +160,6 @@ def fee_update(request, pk):
         form = FeeForm(instance=fee)
     return render(request, 'faculty/fee_form.html', {'form': form, 'fee': fee})
 
-# Complaint Views
 @faculty_required
 def complaint_list(request):
     complaints = Complaint.objects.all()
@@ -157,7 +182,6 @@ def complaint_update(request, pk):
         form = ComplaintForm(instance=complaint)
     return render(request, 'faculty/complaint_form.html', {'form': form, 'complaint': complaint})
 
-# Attendance Views
 @faculty_required
 def attendance_list(request):
     selected_date = request.GET.get('date')
@@ -188,11 +212,10 @@ def attendance_mark(request):
                     defaults={'is_present': is_present}
                 )
             messages.success(request, "Attendance marked successfully for all students.")
-            return redirect('faculty:attendance_list')  # Redirect back to same page
+            return redirect('faculty:attendance_list') 
     else:
         form = AttendanceForm(initial={'date': date.today()})
     
-    # Fetch existing attendance records for the selected date to pre-check boxes
     selected_date = form.initial['date'] if not request.POST else request.POST.get('date')
     attendance_records = Attendance.objects.filter(date=selected_date).select_related('student')
     attendance_dict = {record.student.id: record.is_present for record in attendance_records}
@@ -204,7 +227,6 @@ def attendance_mark(request):
         'selected_date': selected_date
     })
 
-# Check In/Out Views
 @faculty_required
 def check_in_out_list(request):
     check_ins = CheckInOut.objects.all()
@@ -226,7 +248,6 @@ def check_in_out_approve(request, pk):
         form = CheckInOutForm(instance=check_in_out)
     return render(request, 'faculty/check_in_out_form.html', {'form': form, 'check_in_out': check_in_out})
 
-# Notification Views
 @faculty_required
 def notification_list(request):
     notifications = Notification.objects.filter(sender=request.user)
@@ -248,7 +269,6 @@ def notification_add(request):
         form = NotificationForm()
     return render(request, 'faculty/notification_form.html', {'form': form})
 
-# Parent-Student Views
 @faculty_required
 def parent_student_list(request):
     relationships = ParentStudent.objects.all()
@@ -269,7 +289,6 @@ def parent_student_add(request):
         form = ParentStudentForm()
     return render(request, 'faculty/parent_student_form.html', {'form': form})
 
-# New views for student and parent creation
 @faculty_required
 def student_list(request):
     students = User.objects.filter(is_student=True)
@@ -304,7 +323,6 @@ def parent_add(request):
         form = ParentCreateForm()
     return render(request, 'faculty/parent_form.html', {'form': form})
 
-# Login view (already included)
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -312,6 +330,8 @@ def login_view(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
+            if user.is_superuser:
+                return redirect('manager:dashboard')
             if user.is_faculty:
                 return redirect('faculty:dashboard')
             elif user.is_parent:
@@ -324,7 +344,6 @@ def login_view(request):
             messages.error(request, "Invalid email or password.")
     return render(request, 'faculty/login.html')
 
-# Logout view
 @login_required
 def logout_view(request):
     logout(request)

@@ -9,6 +9,7 @@ urlpatterns = [
     path('parents/', include('parents.urls', namespace='parents')),
     path('', include('students.urls', namespace='students')),
     path('faculty/', include('faculty.urls', namespace='faculty')),
+    path('manager/', include('manager.urls', namespace='manager')),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
 ]

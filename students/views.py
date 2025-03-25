@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import FoodPreference, WashBooking, Fee, Complaint, Attendance, CheckInOut, Notification
-from faculty.models import WashSlot
+from faculty.models import WashSlot, FoodMenu
 from .forms import FoodPreferenceForm, WashBookingForm, ComplaintForm, CheckInForm, CheckOutForm
 from django.db.models import Count
 
@@ -14,6 +14,11 @@ def student_required(view_func):
 @student_required
 def student_dashboard(request):
     return render(request, 'students/dashboard.html')
+
+@student_required
+def food_menu_list(request):
+    food_menus = FoodMenu.objects.all()
+    return render(request, 'students/food_menu_list.html', {'food_menus': food_menus})
 
 @student_required
 def food_preference_list(request):

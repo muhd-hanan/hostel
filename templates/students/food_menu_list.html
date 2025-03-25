@@ -4,9 +4,6 @@
     <div class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Food Menu</h1>
-            <a href="{% url 'faculty:food_menu_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                Add New Menu
-            </a>
         </div>
         <table class="w-full border-collapse">
             <thead>
@@ -16,7 +13,6 @@
                     <th class="p-2 text-left">Lunch</th>
                     <th class="p-2 text-left">Snacks</th>
                     <th class="p-2 text-left">Dinner</th>
-                    <th class="p-2 text-left">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,9 +23,6 @@
                         <td class="p-2">{{ menu.lunch }}</td>
                         <td class="p-2">{{ menu.snack }}</td>
                         <td class="p-2">{{ menu.dinner }}</td>
-                        <td class="p-2">
-                            <a href="{% url 'faculty:food_menu_update' menu.pk %}" class="text-blue-500 hover:underline">Edit</a>
-                        </td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="4" class="p-2 text-center">No menus available.</td></tr>

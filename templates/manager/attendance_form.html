@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block title %}Mark Bulk Attendance{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4">Mark Attendance - {{ selected_date }}</h1>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                    <p>{{ message }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">{{ form.date.label }}</label>
+                {{ form.date|add_class:"w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="p-2 text-left">Student Name</th>
+                            <th class="p-2 text-left">Present</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr class="border-b">
+                                <td class="p-2">{{ student.first_name }} {{ student.last_name }}</td>
+                                <td class="p-2">
+                                    <input type="checkbox" 
+                                           name="present_{{ student.id }}" 
+                                           class="h-5 w-5 text-blue-600" 
+                                           {% if attendance_dict.student.id == True %}checked{% endif %}>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="2" class="p-2 text-center">No students found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex space-x-4">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

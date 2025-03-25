@@ -8,10 +8,7 @@ from users.models import User
 class FoodMenuForm(forms.ModelForm):
     class Meta:
         model = FoodMenu
-        fields = ['date', 'meal_type', 'description']
-        widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
-        }
+        fields = ['day', 'breakfast', 'lunch', 'snack', 'dinner']
 
 class WashSlotForm(forms.ModelForm):
     class Meta:
@@ -101,6 +98,22 @@ class ParentCreateForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_parent = True
+        user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+        return user
+    
+
+
+class FacultyCreateForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'password']
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_faculty = True
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()

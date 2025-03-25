@@ -1,0 +1,22 @@
+<!-- manager/templates/manager/dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Manager Dashboard{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Manager Dashboard</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a href="{% url 'manager:food_menu_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Manage Food Menu</a>
+            <a href="{% url 'manager:food_count_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Manage Food Count</a>
+            <a href="{% url 'manager:wash_slot_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Manage Wash Slots</a>
+            <a href="{% url 'manager:fee_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Track Fee Status</a>
+            <a href="{% url 'manager:complaint_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Handle Complaints</a>
+            <a href="{% url 'manager:attendance_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Mark Attendance</a>
+            <a href="{% url 'manager:check_in_out_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Manage Check In/Out</a>
+            <a href="{% url 'manager:notification_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Send Notifications</a>
+            <a href="{% url 'manager:parent_student_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Manage Parent-Student</a>
+            <a href="{% url 'manager:student_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Manage Students</a>
+            <a href="{% url 'manager:parent_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Manage Parents</a>
+            <a href="{% url 'manager:faculty_list' %}" class="bg-blue-500 text-white p-4 rounded hover:bg-blue-600">Manage Faculty</a>
+        </div>
+    </div>
+{% endblock %}

@@ -3,26 +3,30 @@ from common.models import CommonModel
 from users.models import User
 
 class FoodMenu(CommonModel):
-    MEAL_TYPES = (
-        ('breakfast', 'Breakfast'),
-        ('lunch', 'Lunch'),
-        ('snack', 'Evening Snack'),
-        ('dinner', 'Dinner'),
+    DAY_CHOICES = (
+        ('sunday', 'Sunday'),
+        ('monday', 'Monday'),
+        ('tuesday', 'Tuesday'),
+        ('wednesday', 'Wednesday'),
+        ('thursday', 'Thursday'),
+        ('friday', 'Friday'),
+        ('saturday', 'Saturday'),
     )
     
-    date = models.DateField()
-    meal_type = models.CharField(max_length=20, choices=MEAL_TYPES)
-    description = models.TextField()
+    day = models.CharField(max_length=9, choices=DAY_CHOICES, default='sunday')  # Longest day name is "Wednesday" (9 chars)
+    breakfast = models.CharField(max_length=256, null=True, blank=True)
+    lunch = models.CharField(max_length=256, null=True, blank=True)
+    snack = models.CharField(max_length=256, null=True, blank=True)
+    dinner = models.CharField(max_length=256, null=True, blank=True)
 
     class Meta:
         db_table = 'faculty_foodmenu'
         verbose_name = 'food menu'
         verbose_name_plural = 'food menus'
-        ordering = ["-date", "meal_type"]
-        unique_together = ('date', 'meal_type')
+        ordering = ["-id"]  # Note: Changed "-date" to "day" since it's not a DateField
 
     def __str__(self):
-        return f"{self.date} - {self.meal_type}"
+        return f"{self.day}"
 
 class WashSlot(CommonModel):
     start_time = models.TimeField()

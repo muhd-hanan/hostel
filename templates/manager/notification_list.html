@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Notification List{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Notifications</h1>
+            <a href="{% url 'manager:notification_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Send Notification
+            </a>
+        </div>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">Recipient</th>
+                    <th class="p-2 text-left">Message</th>
+                    <th class="p-2 text-left">Sent At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for notification in notifications %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ notification.recipient }}</td>
+                        <td class="p-2">{{ notification.message }}</td>
+                        <td class="p-2">{{ notification.created_datetime }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="p-2 text-center">No notifications sent.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

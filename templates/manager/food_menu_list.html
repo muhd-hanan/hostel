@@ -4,7 +4,7 @@
     <div class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Food Menu</h1>
-            <a href="{% url 'faculty:food_menu_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            <a href="{% url 'manager:food_menu_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                 Add New Menu
             </a>
         </div>
@@ -28,7 +28,7 @@
                         <td class="p-2">{{ menu.snack }}</td>
                         <td class="p-2">{{ menu.dinner }}</td>
                         <td class="p-2">
-                            <a href="{% url 'faculty:food_menu_update' menu.pk %}" class="text-blue-500 hover:underline">Edit</a>
+                            <a href="{% url 'manager:food_menu_update' menu.pk %}" class="text-blue-500 hover:underline">Edit</a>
                         </td>
                     </tr>
                 {% empty %}

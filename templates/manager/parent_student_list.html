@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Parent-Student Relationships{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Parent-Student Relationships</h1>
+            <a href="{% url 'manager:parent_student_add' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Add Relationship
+            </a>
+        </div>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">Parent</th>
+                    <th class="p-2 text-left">Student</th>
+                    <th class="p-2 text-left">Relationship</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for relationship in relationships %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ relationship.parent.email }}</td>
+                        <td class="p-2">{{ relationship.student.email }}</td>
+                        <td class="p-2">{{ relationship.relationship|default:"Not specified" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="p-2 text-center">No relationships available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

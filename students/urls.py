@@ -6,6 +6,7 @@ app_name = 'students'
 urlpatterns = [
     path('', views.student_dashboard, name='dashboard'),
     path('food-preferences/', views.food_preference_list, name='food_preference_list'),
+    path('food-menu/', views.food_menu_list, name='food_menu_list'),
     path('food-preferences/add/', views.food_preference_add, name='food_preference_add'),
     path('wash-slots/', views.wash_slot_list, name='wash_slot_list'),
     path('wash-slots/book/<int:slot_id>/', views.wash_slot_book, name='wash_slot_book'),
