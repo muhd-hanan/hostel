@@ -88,6 +88,19 @@ class Attendance(CommonModel):
         verbose_name_plural = 'attendances'
         ordering = ["-date"]
         unique_together = ('student', 'date')
+
+
+class MessCut(CommonModel):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messcut_records')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_paid = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'students_mess_cut'
+        verbose_name = 'mess_cut'
+        verbose_name_plural = 'mess_cuts'
+        ordering = ["-start_date"]
         
 
 class CheckInOut(CommonModel):

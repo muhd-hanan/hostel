@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import FoodMenu, WashSlot
-from students.models import Fee, Complaint, Attendance, CheckInOut, Notification, FoodPreference
+from students.models import Fee, Complaint, Attendance, CheckInOut, Notification, FoodPreference, MessCut
 from parents.models import ParentStudent
 from django.contrib.auth import authenticate, login, logout
 from users.models import User
@@ -31,6 +31,19 @@ def faculty_dashboard(request):
 def food_menu_list(request):
     food_menus = FoodMenu.objects.all()
     return render(request, 'faculty/food_menu_list.html', {'food_menus': food_menus})
+
+@faculty_required
+def mess_cut_list(request):
+    cuts = MessCut.objects.all()
+    return render(request, 'faculty/cut_list.html', {'cuts': cuts})
+
+@faculty_required
+def mess_cut_update(request, id):
+    cut = MessCut.objects.get(id=id)
+    cut.is_paid = True
+    cut.save()
+    messages.success(request, "Mess cut marked as paid.")
+    return redirect('faculty:mess_cut_list')
 
 
 @faculty_required

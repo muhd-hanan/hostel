@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Fee List{% endblock %}
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Mess Cut</h1>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">Start Date</th>
+                    <th class="p-2 text-left">End Date</th>
+                    <th class="p-2 text-left">Status</th>
+                    <th class="p-2 text-left">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fee in cuts %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ fee.start_date }}</td>
+                        <td class="p-2">{{ fee.end_date }}</td>
+                        <td class="p-2">
+                            {% if fee.is_paid %}
+                            Completed
+                            {% else %}
+                            Pending
+                            {% endif %}
+                        </td>
+                        <td class="p-2">
+                            {% if fee.is_paid %}
+                            Completed
+                            {% else %}
+                            <a href="{% url 'faculty:mess_cut_update' id=fee.id %}" class="text-blue-500">Mark as Complete</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="p-2 text-center">No mess cut available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

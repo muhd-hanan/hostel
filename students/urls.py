@@ -12,6 +12,7 @@ urlpatterns = [
     path('wash-slots/book/<int:slot_id>/', views.wash_slot_book, name='wash_slot_book'),
     path('wash-slots/complete/<int:slot_id>/', views.wash_slot_complete, name='wash_slot_complete'),
     path('fees/', views.fee_list, name='fee_list'),
+    path('mess-cuts/', views.mess_cut_list, name='mess_cut_list'),
     path('complaints/', views.complaint_list, name='complaint_list'),
     path('complaints/add/', views.complaint_add, name='complaint_add'),
     path('attendance/', views.attendance_list, name='attendance_list'),

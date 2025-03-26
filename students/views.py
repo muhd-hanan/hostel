@@ -2,10 +2,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import FoodPreference, WashBooking, Fee, Complaint, Attendance, CheckInOut, Notification
+from .models import FoodPreference, WashBooking, Fee, Complaint, Attendance, CheckInOut, Notification, MessCut
 from faculty.models import WashSlot, FoodMenu
 from .forms import FoodPreferenceForm, WashBookingForm, ComplaintForm, CheckInForm, CheckOutForm
 from django.db.models import Count
+from datetime import timedelta, date
 
 def student_required(view_func):
     decorated_view_func = login_required(user_passes_test(lambda u: u.is_student)(view_func))
@@ -77,6 +78,54 @@ def wash_slot_complete(request, slot_id):
 def fee_list(request):
     fees = Fee.objects.filter(student=request.user)
     return render(request, 'students/fee_list.html', {'fees': fees})
+
+@student_required
+def mess_cut_list(request):
+    # Get current user (student)
+    student = request.user
+    
+    # Get the last 6 days of attendance records
+    attendance_records = Attendance.objects.filter(
+        student=student,
+        date__gte=date.today() - timedelta(days=6)
+    ).order_by('-date')[:6]
+    
+    # Get existing mess cuts
+    cuts = MessCut.objects.filter(student=student)
+    
+    # Check if student was absent for last 6 days
+    if len(attendance_records) == 6:  # Ensure we have 6 days of records
+        all_absent = all(not record.is_present for record in attendance_records)
+        
+        if all_absent:
+            # Calculate dates for the mess cut
+            end_date = date.today()
+            start_date = end_date - timedelta(days=5)  # 6 days total including start and end
+            
+            # Check if a mess cut already exists for these dates
+            existing_cut = MessCut.objects.filter(
+                student=student,
+                start_date=start_date,
+                end_date=end_date
+            ).exists()
+            
+            if not existing_cut:
+                # Create new mess cut
+                MessCut.objects.create(
+                    student=student,
+                    start_date=start_date,
+                    end_date=end_date,
+                    is_paid=False
+                )
+                # Refresh cuts after creation
+                cuts = MessCut.objects.filter(student=student)
+
+    # Pass both cuts and attendance to template for display if needed
+    context = {
+        'cuts': cuts,
+        'attendance': attendance_records,
+    }
+    return render(request, 'students/cut_list.html', context)
 
 @student_required
 def complaint_list(request):

@@ -11,6 +11,9 @@ urlpatterns = [
     path('food-menu/count/', views.food_count_list, name='food_count_list'),
     path('food-menu/add/', views.food_menu_add, name='food_menu_add'),
     path('food-menu/<int:pk>/update/', views.food_menu_update, name='food_menu_update'),
+
+    path('mess-cuts/', views.mess_cut_list, name='mess_cut_list'),
+    path('mess-cuts/update/<int:id>/', views.mess_cut_update, name='mess_cut_update'),
     
     path('wash-slots/', views.wash_slot_list, name='wash_slot_list'),
     path('wash-slots/add/', views.wash_slot_add, name='wash_slot_add'),
