@@ -39,7 +39,8 @@ class CheckInForm(forms.ModelForm):
 class CheckOutForm(forms.ModelForm):
     class Meta:
         model = CheckInOut
-        fields = ['check_out']
+        fields = ['check_in','check_out']
         widgets = {
+            'check_in': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'check_out': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }

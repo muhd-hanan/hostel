@@ -20,4 +20,6 @@ urlpatterns = [
     path('check-in/add/', views.check_in_add, name='check_in_add'),
     path('check-out/add/', views.check_out_add, name='check_out_add'),
     path('notifications/', views.notification_list, name='notification_list'),
+    path('change/password/', views.change_password, name='change_password'),
+
 ]

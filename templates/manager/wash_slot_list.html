@@ -16,6 +16,7 @@
                     <th class="p-2 text-center">Max Capacity</th>
                     <th class="p-2 text-center">Current Students</th>
                     <th class="p-2 text-center">Available Capacity</th>
+                    <th class="p-2 text-center">Students</th>
                     <th class="p-2 text-center">Actions</th>
                 </tr>
             </thead>
@@ -26,6 +27,13 @@
                         <td class="p-2 text-center">{{ slot.max_capacity }}</td>
                         <td class="p-2 text-center">{{ slot.students.count }}</td>
                         <td class="p-2 text-center">{{ slot.max_capacity|sub:slot.students.count }}</td>
+                        <td class="p-2 text-center">
+                            {% for student in slot.students.all %}
+                                {{ student.first_name }} {{ student.last_name }}{% if not forloop.last %},{% endif %}
+                            {% empty %}
+                                No students assigned
+                            {% endfor %}
+                        </td>
                         <td class="p-2 text-center">
                             <a href="{% url 'manager:wash_slot_update' slot.pk %}" class="text-blue-500 hover:underline">Edit</a>
                         </td>

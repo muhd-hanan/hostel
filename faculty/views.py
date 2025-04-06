@@ -9,8 +9,10 @@ from django.contrib.auth import authenticate, login, logout
 from users.models import User
 from .forms import (
     FoodMenuForm, WashSlotForm, FeeForm, ComplaintForm, AttendanceForm,
-    CheckInOutForm, NotificationForm, ParentStudentForm, StudentCreateForm, ParentCreateForm, FeeAddForm
+    CheckInOutForm, NotificationForm, ParentStudentForm, StudentCreateForm, ParentCreateForm, FeeAddForm, PasswordChangeForm
 )
+from django.contrib.auth import update_session_auth_hash
+
 from django.db.models import Count
 from datetime import date
 
@@ -145,12 +147,23 @@ def fee_list(request):
 
 @faculty_required
 def fee_add(request):
+    students = User.objects.filter(is_student=True)
     if request.method == 'POST':
         form = FeeAddForm(request.POST)
         if form.is_valid():
             fee = form.save(commit=False)
-            fee.updated_by = request.user
-            fee.save()
+            amount = fee.amount
+            due_date= fee.due_date
+            status= fee.status
+            for student in students:
+                Fee.objects.create(
+                    student=student,
+                    amount=amount,
+                    due_date=due_date,
+                    status=status,
+                    created_by=request.user,
+                    updated_by=request.user
+                )
             messages.success(request, "Fee status updated successfully.")
             return redirect('faculty:fee_list')
     else:
@@ -362,3 +375,17 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully.")
     return redirect('login')
+
+
+@faculty_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Password changed successfully.")
+            return redirect('faculty:dashboard')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'faculty/change_password.html', {'form': form})

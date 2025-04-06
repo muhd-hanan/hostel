@@ -8,12 +8,14 @@ from django.contrib.auth import authenticate, login, logout
 from users.models import User
 from faculty.forms import (
     FoodMenuForm, WashSlotForm, FeeForm, ComplaintForm, AttendanceForm,
-    CheckInOutForm, NotificationForm, ParentStudentForm, StudentCreateForm, ParentCreateForm, FeeAddForm, FacultyCreateForm
+    CheckInOutForm, NotificationForm, ParentStudentForm, StudentCreateForm, ParentCreateForm, FeeAddForm, FacultyCreateForm, PasswordChangeForm as DjangoPasswordChangeForm
 )
 from django.db.models import Count
 from datetime import date
 
 from django.utils import timezone
+from django.contrib.auth import update_session_auth_hash
+
 
 # Decorator to check if user is faculty
 def manager_required(view_func):
@@ -131,12 +133,23 @@ def fee_list(request):
 
 @manager_required
 def fee_add(request):
+    students = User.objects.filter(is_student=True)
     if request.method == 'POST':
         form = FeeAddForm(request.POST)
         if form.is_valid():
             fee = form.save(commit=False)
-            fee.updated_by = request.user
-            fee.save()
+            amount = fee.amount
+            due_date= fee.due_date
+            status= fee.status
+            for student in students:
+                Fee.objects.create(
+                    student=student,
+                    amount=amount,
+                    due_date=due_date,
+                    status=status,
+                    created_by=request.user,
+                    updated_by=request.user
+                )
             messages.success(request, "Fee status updated successfully.")
             return redirect('manager:fee_list')
     else:
@@ -340,3 +353,37 @@ def faculty_add(request):
         form = FacultyCreateForm()
     return render(request, 'manager/faculty_form.html', {'form': form})
 
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        # Verify old password
+        if not request.user.check_password(old_password):
+            messages.error(request, "Old password is incorrect.")
+            return redirect('change_password')
+
+        # Check if new passwords match
+        if new_password != confirm_password:
+            messages.error(request, "New passwords do not match.")
+            return redirect('change_password')
+
+        # Set and save new password
+        request.user.set_password(new_password)
+        request.user.save()
+        update_session_auth_hash(request, request.user)  # Keep user logged in
+        messages.success(request, "Password updated successfully.")
+        user = request.user
+        if user.is_superuser:
+            return redirect('manager:dashboard')
+        if user.is_faculty:
+            return redirect('faculty:dashboard')
+        elif user.is_parent:
+            return redirect('parents:dashboard')
+        elif user.is_student:
+            return redirect('students:dashboard')
+
+    return render(request, 'change_password.html')

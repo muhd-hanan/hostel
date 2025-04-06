@@ -41,4 +41,7 @@ urlpatterns = [
     path('parents/add/', views.parent_add, name='parent_add'),
     path('faculty/', views.faculty_list, name='faculty_list'),
     path('faculty/add/', views.faculty_add, name='faculty_add'),
+
+    path('change/password/', views.change_password, name='change_password'),
+
 ]

@@ -1,8 +1,12 @@
 # parents/views.py
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from students.models import Attendance, CheckInOut, Fee, Notification
 from parents.models import ParentStudent
+from faculty.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+
 
 def parent_required(view_func):
     decorated_view_func = login_required(user_passes_test(lambda u: u.is_parent)(view_func))
@@ -38,3 +42,17 @@ def fee_list(request):
 def notification_list(request):
     notifications = Notification.objects.filter(recipient="Parents")
     return render(request, 'parents/notification_list.html', {'notifications': notifications})
+
+
+@parent_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Password changed successfully.")
+            return redirect('parents:dashboard')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'parents/change_password.html', {'form': form})

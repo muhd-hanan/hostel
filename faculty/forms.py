@@ -23,7 +23,7 @@ class WashSlotForm(forms.ModelForm):
 class FeeAddForm(forms.ModelForm):
     class Meta:
         model = Fee
-        fields = ['student','amount', 'due_date', 'status']
+        fields = ['amount', 'due_date', 'status']
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
         }
@@ -118,3 +118,18 @@ class FacultyCreateForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+
+class PasswordChangeForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    class Meta:
+        model = User
+        fields = ['password']
+
+    def clean_confirm_password(self):
+        password = self.cleaned_data.get('password')
+        confirm_password = self.cleaned_data.get('confirm_password')
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Passwords do not match.")
+        return confirm_password

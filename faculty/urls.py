@@ -6,6 +6,8 @@ app_name = 'faculty'
 
 urlpatterns = [
     path('', views.faculty_dashboard, name='dashboard'),
+
+    
     
     path('food-menu/', views.food_menu_list, name='food_menu_list'),
     path('food-menu/count/', views.food_count_list, name='food_count_list'),
@@ -42,4 +44,8 @@ urlpatterns = [
     path('students/add/', views.student_add, name='student_add'),
     path('parents/', views.parent_list, name='parent_list'),
     path('parents/add/', views.parent_add, name='parent_add'),
+
+    path('change/password/', views.change_password, name='change_password'),
+
 ]
+

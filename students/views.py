@@ -5,8 +5,11 @@ from django.contrib import messages
 from .models import FoodPreference, WashBooking, Fee, Complaint, Attendance, CheckInOut, Notification, MessCut
 from faculty.models import WashSlot, FoodMenu
 from .forms import FoodPreferenceForm, WashBookingForm, ComplaintForm, CheckInForm, CheckOutForm
+from faculty.forms import PasswordChangeForm
 from django.db.models import Count
 from datetime import timedelta, date
+from django.contrib.auth import update_session_auth_hash
+
 
 def student_required(view_func):
     decorated_view_func = login_required(user_passes_test(lambda u: u.is_student)(view_func))
@@ -158,30 +161,47 @@ def check_in_out_list(request):
     check_ins = CheckInOut.objects.filter(student=request.user)
     return render(request, 'students/check_in_out_list.html', {'check_ins': check_ins})
 
+# @student_required
+# def check_in_add(request):
+#     if request.method == 'POST':
+#         form = CheckInForm(request.POST)
+#         if form.is_valid():
+#             check_in_datetime = form.cleaned_data['check_in']
+#             existing_record = CheckInOut.objects.filter(
+#                 student=request.user,
+#                 check_in__date=check_in_datetime.date()
+#             ).exists()
+#             if existing_record:
+#                 messages.error(request, "A check-in already exists for this date.")
+#                 return render(request, 'students/check_in_out_form.html', {'form': form})
+            
+#             existing_record = CheckInOut.objects.filter(
+#                 student=request.user,
+#                 check_out__date=check_in_datetime.date()
+#             ).exists()
+#             if existing_record:
+#                 checkout = CheckInOut.objects.get(student=request.user, check_out__date=check_in_datetime.date())
+#                 checkout.check_out = check_in_datetime
+#                 checkout.save()
+#                 messages.success(request, "Check in/out request submitted successfully.")
+#                 return redirect('students:check_in_out_list')
+#             check_in_out = form.save(commit=False)
+#             check_in_out.student = request.user
+#             check_in_out.created_by = request.user
+#             check_in_out.updated_by = request.user
+#             check_in_out.save()
+#             messages.success(request, "Check in/out request submitted successfully.")
+#             return redirect('students:check_in_out_list')
+#     else:
+#         form = CheckInForm()
+#     return render(request, 'students/check_in_out_form.html', {'form': form})
+
+
 @student_required
 def check_in_add(request):
     if request.method == 'POST':
         form = CheckInForm(request.POST)
         if form.is_valid():
-            check_in_datetime = form.cleaned_data['check_in']
-            existing_record = CheckInOut.objects.filter(
-                student=request.user,
-                check_in__date=check_in_datetime.date()
-            ).exists()
-            if existing_record:
-                messages.error(request, "A check-in already exists for this date.")
-                return render(request, 'students/check_in_out_form.html', {'form': form})
-            
-            existing_record = CheckInOut.objects.filter(
-                student=request.user,
-                check_out__date=check_in_datetime.date()
-            ).exists()
-            if existing_record:
-                checkout = CheckInOut.objects.get(student=request.user, check_out__date=check_in_datetime.date())
-                checkout.check_out = check_in_datetime
-                checkout.save()
-                messages.success(request, "Check in/out request submitted successfully.")
-                return redirect('students:check_in_out_list')
             check_in_out = form.save(commit=False)
             check_in_out.student = request.user
             check_in_out.created_by = request.user
@@ -193,43 +213,38 @@ def check_in_add(request):
         form = CheckInForm()
     return render(request, 'students/check_in_out_form.html', {'form': form})
 
+
 @student_required
 def check_out_add(request):
+    last_check_in = CheckInOut.objects.filter(check_out=None).first()
+    if last_check_in is None:
+        messages.error(request, "No previous check-in found.")
+        return redirect('students:check_in_out_list')
     if request.method == 'POST':
-        form = CheckOutForm(request.POST)
+        form = CheckOutForm(request.POST, instance=last_check_in)
         if form.is_valid():
-            check_out_datetime = form.cleaned_data['check_out']
-            existing_record = CheckInOut.objects.filter(
-                student=request.user,
-                check_out__date=check_out_datetime.date()
-            ).exists()
-            if existing_record:
-                messages.error(request, "A check-in already exists for this date.")
-                return render(request, 'students/check_in_out_form.html', {'form': form})
-            
-            existing_record = CheckInOut.objects.filter(
-                student=request.user,
-                check_in__date=check_out_datetime.date()
-            ).exists()
-            if existing_record:
-                checkout = CheckInOut.objects.get(student=request.user, check_in__date=check_out_datetime.date())
-                checkout.check_out = check_out_datetime
-                checkout.save()
-                messages.success(request, "Check in/out request submitted successfully.")
-                return redirect('students:check_in_out_list')
-            
             check_in_out = form.save(commit=False)
-            check_in_out.student = request.user
-            check_in_out.created_by = request.user
-            check_in_out.updated_by = request.user
             check_in_out.save()
             messages.success(request, "Check in/out request submitted successfully.")
             return redirect('students:check_in_out_list')
     else:
-        form = CheckOutForm()
+        form = CheckOutForm(instance=last_check_in)
     return render(request, 'students/check_in_out_form.html', {'form': form})
 
 @student_required
 def notification_list(request):
     notifications = Notification.objects.filter(recipient="Students")
     return render(request, 'students/notification_list.html', {'notifications': notifications})
+
+@student_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Password changed successfully.")
+            return redirect('parents:dashboard')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'parents/change_password.html', {'form': form})
